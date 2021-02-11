@@ -9,19 +9,60 @@ It also uses a bubble sort instead of a mergesort. */
 
 #define N_NODES 100000
 #define N_DIM 10
+#define TEST_NODES 1000
 
 void preprocess(double pointSet[N_DIM][N_NODES], double orderedSet[N_DIM][N_NODES], int bMap[N_NODES], int fMap[N_DIM][N_NODES]);
 void sort(double unsorted[N_NODES], int indexTrack[N_NODES]);
-int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES], int bMap[N_NODES], int fMap[N_DIM][N_NODES], double e);
+int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES], int bMap[N_NODES], int fMap[N_DIM][N_NODES], double e, double pointSet[N_DIM][N_NODES]);
 int binarySearchLeftMost(double ordered[N_NODES], double target);
 int binarySearchRightMost(double ordered[N_NODES], double target);
 
 int main(void) {
-    // Initialise pointSet, orderedSet, backward and forward maps
+    // Initialise pointSet, orderedSet, backward and forward maps and testing set
     static double pointSet[N_DIM][N_NODES];
     static double orderedSet[N_DIM][N_NODES];
-    static double fMap[N_DIM][N_NODES];
-    static double bMap[N_NODES];
+    static int fMap[N_DIM][N_NODES];
+    static int bMap[N_NODES];
+
+    static double testSet[N_NODES][N_DIM];
+
+    // Read in data from the file into the pointSet
+    FILE *randomFile;
+    randomFile = fopen("random.txt", "r");
+    for (int n = 0; n < N_NODES; n++) {
+        for (int d = 0; d < N_DIM; d++) {
+            fscanf(randomFile, "%lf", &pointSet[d][n]);
+        }
+    }
+    fclose(randomFile);
+    printf("=====Finished processing pointset=====\n");
+
+    // Preprocess the orderedset and maps
+    preprocess(pointSet, orderedSet, bMap, fMap);
+    printf("=====Finished processing orderedset and maps=====\n");
+
+    // Read in data from the testing set
+    FILE *testFile;
+    testFile = fopen("test.txt", "r");
+    for (int n = 0; n < TEST_NODES; n++) {
+        for (int d = 0; d < N_DIM; d++) {
+            fscanf(testFile, "%lf", &testSet[n][d]);
+        }
+    }
+    fclose(testFile);
+
+    printf("=====Finished processing data=====\n");
+
+    // For each node, test for the nearest neighbour
+    int noNeighbour = 0;
+    for (int n = 0; n < TEST_NODES; n++) {
+        int index = nearestNeighbourSearch(testSet[n], orderedSet, bMap, fMap, 39.4, pointSet);
+        if (index == -1) {
+            noNeighbour += 1;
+        }
+    }
+
+    printf("%d nodes had no nearest neighbour\n", noNeighbour);
 
     return 0;
 }
@@ -34,56 +75,68 @@ void preprocess(double pointSet[N_DIM][N_NODES], double orderedSet[N_DIM][N_NODE
     // Create backward map for the first dimension by sorting first dimension in point set
     sort(pointSet[0], indexTrack);
     for (int i = 0; i < N_NODES; i++) {
+        // printf("i = %d, indexTrack = %d, pointSetIndexTrack = %lf\n", i, indexTrack[i], pointSet[0][indexTrack[i]]);
         orderedSet[0][i] = pointSet[0][indexTrack[i]];
         bMap[i] = indexTrack[i];
-        fMap[i][indexTrack[i]] = i;
+        fMap[0][indexTrack[i]] = i;
     }
+
+    printf("Created one backward map\n");
+    // printf("Printing the ordered set of first dimension\n");
+    // for (int i = 0; i < N_NODES; i++) {
+    //     printf("%lf\n", orderedSet[0][i]);
+    // }
 
     // Create forward map for each dimension by sorting corresponding coordinate
     // in the point set
     for (int i = 1; i < N_DIM; i++) {
         sort(pointSet[i], indexTrack);
         for (int j = 0; j < N_NODES; j++) {
-            orderedSet[0][j] = pointSet[j][indexTrack[j]];
-            fMap[j][indexTrack[j]] = j;
+            orderedSet[i][j] = pointSet[i][indexTrack[j]];
+            fMap[i][indexTrack[j]] = j;
         }
     }
 
 }
 
+/* Given an unsorted list, will keep it unsorted by modify indexTrack to keep track
+of the position of the original indexes in ascending order */
 /* Sorts an unsorted list and modifies indexTrack to keep track of the position
 of the original indexes in the newly sorted array.*/
 void sort(double unsorted[N_NODES], int indexTrack[N_NODES]) {
+    // printf("Starting a bubble sort\n");
     // Initialise the temp map
     for (int i = 0; i < N_NODES; i++) {
         indexTrack[i] = i;
     }
 
     // Bubble sort whilst keeping track of the new indexes
-    for (int i = 0; i < N_NODES; i++) {
-        for (int j = 0; j < N_NODES - i; j++) {
-            if (unsorted[j] > unsorted[j + 1]) {
-                double t = unsorted[j + 1];
-                unsorted[j + 1] = unsorted[j];
-                unsorted[j] = t;
-
-                t = indexTrack[j + 1];
+    for (int i = 0; i < N_NODES - 1; i++) {
+        for (int j = 0; j < N_NODES - i - 1; j++) {
+            if (unsorted[indexTrack[j]] > unsorted[indexTrack[j + 1]]) {
+                // double t = unsorted[j + 1];
+                // unsorted[j + 1] = unsorted[j];
+                // unsorted[j] = t;
+                
+                double t = indexTrack[j + 1];
                 indexTrack[j + 1] = indexTrack[j];
                 indexTrack[j] = t;
             }
         }
     }
 
+    // printf("Finished a bubble sort\n");
     return;
 }
 
 /* Performs the closest point search. It returns an index into the point set array
 which represents the cloeset point. Returns -1 if no nearest poitn was found within
 the given margin */
-int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES], int bMap[N_NODES], int fMap[N_DIM][N_NODES], double e) {
+int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES], int bMap[N_NODES], int fMap[N_DIM][N_NODES], double e, double pointSet[N_DIM][N_NODES]) {
     // Perform binary search on first dimension
     int bottom = binarySearchLeftMost(orderedSet[0], point[0] - e);
     int top = binarySearchRightMost(orderedSet[0], point[0] + e);
+    // printf("First dimension has lower %d and upper %d\n", bottom, top);
 
     // Create list of candidates to be trimmed
     int candidates[N_NODES];
@@ -93,10 +146,16 @@ int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES
         nCandidates++;
     }
 
+    // printf("After first trim, these candidates are within range\n");
+    // for (int i = 0; i < nCandidates; i++) {
+    //     printf("%lf\n", pointSet[0][candidates[i]]);
+    // }
+
     // Trim list with binary searches on other dimensions along with lookups
     for (int d = 1; d < N_DIM; d++) {
         bottom = binarySearchLeftMost(orderedSet[d], point[d] - e);
         top = binarySearchRightMost(orderedSet[d], point[d] + e);
+        // printf("Dimension %d has lower %d and upper %d\n", d, bottom, top);
 
         // Track how many candidates before and after the round
         int beforeTrim = nCandidates;
@@ -110,6 +169,7 @@ int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES
         }
     }
 
+    printf("Nodes after trim = %d\n", nCandidates);
     // Perform an exhaustive search on the remaining points
     double maximum = DBL_MAX;
     int index = -1;
