@@ -25,3 +25,4 @@ Furthermore, let's say that our test point coordinates are essentially the same,
 ## Analysis of the relationship between p and e
 We want to try and ensure we end up with at least one point remaining within the area after we have trimmed our list, or we will come up empty handed, without finding a nearest neighbour. The paper does try to give some calculations on the relationship between p (the probability that there is at least one point)
 
+TBC
