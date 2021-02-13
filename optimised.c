@@ -37,14 +37,14 @@ int main(void) {
     static double testSet[N_NODES][N_DIM];
 
     // Read in data from the file into the pointSet
-    FILE *randomFile;
-    randomFile = fopen("random.txt", "r");
+    FILE *dataSetFile;
+    dataSetFile = fopen("dataset.txt", "r");
     for (int n = 0; n < N_NODES; n++) {
         for (int d = 0; d < N_DIM; d++) {
-            fscanf(randomFile, "%lf", &pointSet[d][n]);
+            fscanf(dataSetFile, "%lf", &pointSet[d][n]);
         }
     }
-    fclose(randomFile);
+    fclose(dataSetFile);
     printf("=====Finished processing pointset=====\n");
 
     // Preprocess the orderedset and maps
@@ -52,14 +52,14 @@ int main(void) {
     printf("=====Finished processing orderedset and maps=====\n");
 
     // Read in data from the testing set
-    FILE *testFile;
-    testFile = fopen("test.txt", "r");
+    FILE *testSetFile;
+    testSetFile = fopen("testset.txt", "r");
     for (int n = 0; n < TEST_NODES; n++) {
         for (int d = 0; d < N_DIM; d++) {
-            fscanf(testFile, "%lf", &testSet[n][d]);
+            fscanf(testSetFile, "%lf", &testSet[n][d]);
         }
     }
-    fclose(testFile);
+    fclose(testSetFile);
 
     printf("=====Finished processing data=====\n");
 

@@ -3,7 +3,7 @@
 import sys
 import random
 
-file = open("random.txt", "w")
+file = open("dataset.txt", "w")
 
 dim = int(input("How many dimensions?"))
 for i in range(int(input("How many nodes?"))):
@@ -15,7 +15,7 @@ for i in range(int(input("How many nodes?"))):
 
 file.close()
 
-testFile = open("test.txt", "w")
+testFile = open("testset.txt", "w")
 
 for i in range(int(input("How many test nodes?"))):
     node = []
