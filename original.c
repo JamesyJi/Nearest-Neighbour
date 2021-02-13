@@ -62,7 +62,7 @@ int main(void) {
         }
     }
 
-    printf("%d nodes had no nearest neighbour\n", noNeighbour);
+    printf("%d nodes had no nearest neighbour in their hypercube of side length  \n", noNeighbour);
 
     return 0;
 }
@@ -96,10 +96,9 @@ void preprocess(double pointSet[N_DIM][N_NODES], double orderedSet[N_DIM][N_NODE
             fMap[i][indexTrack[j]] = j;
         }
     }
-
 }
 
-/* Given an unsorted list, will keep it unsorted by modify indexTrack to keep track
+/* Given an unsorted list, will keep it unsorted but modify indexTrack to keep track
 of the position of the original indexes in ascending order */
 /* Sorts an unsorted list and modifies indexTrack to keep track of the position
 of the original indexes in the newly sorted array.*/
