@@ -20,4 +20,8 @@ However, the paper does not dive into further analysis on the ordering of dimens
 
 Now, imagine extreme worst case scenarios where e < 0.000...1 or e > 0.999... . In these respective cases, we will never go out of bounds/always go out of bounds and thus, there will be little variation in the number of sandwiched points, making the dimensional ordering not worth it.
 
-Furthermore, let's say that our test point coordinates are essentially the same, e.g. (0.6, 0.6, 0.6, 0.6, 0.6). Again, there would not be much point ordering the dimensions since there would not be much difference between the number of points sandwiched between 0.6+-e in any of the dimensions. Such coordinates like in the example given could arise from a Gaussian distribution with very little variance. However, since we are dealing with uniform point distributions, above examples are very rare. 
+Furthermore, let's say that our test point coordinates are essentially the same, e.g. (0.6, 0.6, 0.6, 0.6, 0.6). Again, there would not be much point ordering the dimensions since there would not be much difference between the number of points sandwiched between 0.6+-e in any of the dimensions. Such coordinates like in the example given could arise from a Gaussian distribution with very little variance. However, since we are dealing with uniform point distributions these occurences would be very rare.
+
+## Analysis of the relationship between p and e
+We want to try and ensure we end up with at least one point remaining within the area after we have trimmed our list, or we will come up empty handed, without finding a nearest neighbour. The paper does try to give some calculations on the relationship between p (the probability that there is at least one point)
+
