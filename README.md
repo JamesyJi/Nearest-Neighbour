@@ -4,6 +4,9 @@ An exploration of the algorithm in [A Simple Algorithm for Nearest Neighbours in
 1. Explain my attempts to optimise the algorithm
 2. Delve into some of the more complicated analysis on the relationship between the minimum hypercube/hypersphere measurements and the probability that a point exists within the range
 
+## How to use ##
+Please use "./optimised" (./original takes way too long and is more for theoretical comparison rather than use and optimised also prints out more information). Run "python3 generator.py" to generate data set nodes, the dimensionality of the nodes and test set nodes. Please modify the defines at the top of optimised.c to ensure the same parameters as the data you have generated. Modify the margin "double e" as you see fit. Compile and run. It will run nearest neighbour searches on all the test nodes and print out some information regarding their results (Note, currently, I am focusing on simply checking the number of nodes in the hypercubes rather than finding the nearest neighbour and have modified the code making it slightly inaccurate if your purpose is to find the nearest neighbour).
+
 ## Before we begin
 I would recommend reading Chapter 3 of the paper beginning on page 5. It is about 3 pages long, requires little to no understanding of mathematics and will provide a broad overview of how the algorithm works. It will suffice for part 1.
 
@@ -22,7 +25,7 @@ Now, imagine extreme worst case scenarios where e < 0.000...1 or e > 0.999... . 
 
 Furthermore, let's say that our test point coordinates are essentially the same, e.g. (0.6, 0.6, 0.6, 0.6, 0.6). Again, there would not be much point ordering the dimensions since there would not be much difference between the number of points sandwiched between 0.6+-e in any of the dimensions. Such coordinates like in the example given could arise from a Gaussian distribution with very little variance. However, since we are dealing with uniform point distributions these occurences would be very rare.
 
-## Analysis of the relationship between p and e
+## Analysis of the relationship between p and e and improving on the given equation
 We want to try and ensure we end up with at least one point remaining within the area after we have trimmed our list, or we will come up empty handed, without finding a nearest neighbour. The paper does try to give some calculations on the relationship between p (the probability that there is at least one point)
 
-TBC
+TO BE CONTINUED WITH A LOT OF ANALYSIS
