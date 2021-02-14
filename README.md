@@ -2,7 +2,7 @@
 
 An exploration of the algorithm in [A Simple Algorithm for Nearest Neighbours in High Dimensions (October 1995) by Sameer A. Nene and Shree K. Nayar from the Department of Computer Science at Columbia University](https://www1.cs.columbia.edu/CAVE/publications/pdfs/Nene_TR95.pdf). In this readme, I will:
 1. Explain my attempts to optimise the algorithm
-2. Delve into some of the more complicated analysis on the relationship between the minimum hypercube/hypersphere measurements and the probability that a point exists within the range
+2. Delve into some of the more complicated analysis on the relationship between the minimum hypercube/hypersphere measurements and the probability that a point exists within the range **(VERY IN DEPTH)**
 
 ## How to use ##
 Please use **./optimised** (./original takes way too long and is more for theoretical comparison rather than use and optimised also prints out more information). Run **python3 generator.py** to generate data set nodes, the dimensionality of the nodes and test set nodes. Please modify the defines at the top of **optimised.c** to ensure the same parameters as the data you have generated. Modify the margin "double e" as you see fit. Compile and run. It will run nearest neighbour searches on all the test nodes and print out some information regarding their results (Note, currently, I am focusing on simply checking the number of nodes in the hypercubes rather than finding the nearest neighbour and have modified the code making it slightly inaccurate if your purpose is to find the nearest neighbour).
@@ -28,4 +28,4 @@ Furthermore, let's say that our test point coordinates are essentially the same,
 ## Analysis of the relationship between p and e and improving on the given equation
 We want to try and ensure we end up with at least one point remaining within the area after we have trimmed our list, or we will come up empty handed, without finding a nearest neighbour. The paper does try to give some calculations on the relationship between p (the probability that there is at least one point)
 
-TO BE CONTINUED WITH A LOT OF ANALYSIS
+TO BE CONTINUED WITH VERY IN DEPTH ANALYSIS. CURRENTLY COLLATING SHEETS IN ORDER AND TRANSCRIBING TO LATEX.
