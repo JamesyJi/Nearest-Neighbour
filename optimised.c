@@ -8,12 +8,14 @@ to order the dimensions for searching which is more effective on small scale */
 #include <math.h>
 #include <time.h>
 
+// Modify these parameters as you see fit
 #define N_NODES 100000
 #define N_DIM 10
 #define TEST_NODES 10000
+double e = 0.2304637055;
 
-double searchTime = 0;
-int inRange = 0;
+double searchTime = 0; // Total time taken during search stage
+int inRange = 0; // Tracks how many nodes had a nearest neighbour within e distance
 
 typedef struct tuple {
     int index;
@@ -24,7 +26,6 @@ static int candidates[N_NODES];
 static tuple unsortedTuples[N_NODES];
 
 void preprocess(double pointSet[N_DIM][N_NODES], double orderedSet[N_DIM][N_NODES], int bMap[N_DIM][N_NODES], int fMap[N_DIM][N_NODES]);
-void sort(double unsorted[N_NODES], int indexTrack[N_NODES]);
 void mergeSortIndex(double unsorted[N_NODES], int indexTrack[N_NODES]);
 void mergeSort(tuple unsorted[N_NODES], int start, int end);
 void merge(tuple unsorted[N_NODES], int start, int centre, int end);
@@ -70,9 +71,6 @@ int main(void) {
 
     printf("=====Finished processing data=====\n");
 
-    double e = 0.225;
-    // double e = 0.2304637055;
-
     // For each node, test for the nearest neighbour
     int noNeighbour = 0;
     for (int n = 0; n < TEST_NODES; n++) {
@@ -82,8 +80,8 @@ int main(void) {
         }
     }
 
-    printf("%d nodes had no nearest neighbour in the hypercube of side length 2e with e = %lf\n", noNeighbour, e);
-    printf("%d nodes had a nearest neighbour with distance under %lf\n", inRange, e);
+    printf("%d test nodes had no data nodes in the hypercube of side length 2e with e = %lf\n", noNeighbour, e);
+    printf("%d test nodes had a nearest neighbour with distance under %lf\n", inRange, e);
     printf("Took %lf seconds to search\n", searchTime);
 
     return 0;
@@ -181,35 +179,6 @@ void merge(tuple unsorted[N_NODES], int start, int centre, int end) {
 
     return;
 }
-/* Given an unsorted list, will keep it unsorted by modify indexTrack to keep track
-of the position of the original indexes in ascending order */
-/* Sorts an unsorted list and modifies indexTrack to keep track of the position
-of the original indexes in the newly sorted array.*/
-void sort(double unsorted[N_NODES], int indexTrack[N_NODES]) {
-    // printf("Starting a bubble sort\n");
-    // Initialise the temp map
-    for (int i = 0; i < N_NODES; i++) {
-        indexTrack[i] = i;
-    }
-
-    // Bubble sort whilst keeping track of the new indexes
-    for (int i = 0; i < N_NODES - 1; i++) {
-        for (int j = 0; j < N_NODES - i - 1; j++) {
-            if (unsorted[indexTrack[j]] > unsorted[indexTrack[j + 1]]) {
-                // double t = unsorted[j + 1];
-                // unsorted[j + 1] = unsorted[j];
-                // unsorted[j] = t;
-                
-                double t = indexTrack[j + 1];
-                indexTrack[j + 1] = indexTrack[j];
-                indexTrack[j] = t;
-            }
-        }
-    }
-
-    // printf("Finished a bubble sort\n");
-    return;
-}
 
 /* Given an unsorted array, will keep it unsorted but modify indexTrack to keep
 track of the position of the original indexes in ascending order of their corresponding
@@ -279,7 +248,6 @@ int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES
             }
         }
     }
-    // printf("Nodes after trim = %d\n", nCandidates);
 
     // Perform an exhaustive search on the remaining points
     double maximum = DBL_MAX;
@@ -296,6 +264,11 @@ int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES
             inRangeFlag = 1;
         }
         if (distance < maximum) {
+            // TODO: There could potentially be a point outside the hypercube but
+            // closer than a point inside the hypercube. We need to search extra
+            // strips to account for this but for now, we are more focused on
+            // the number of points IN the hypercube for our probability distribution
+            // analysis
             maximum = distance;
             index = candidates[n];
         }

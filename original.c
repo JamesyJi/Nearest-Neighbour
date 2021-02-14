@@ -8,11 +8,14 @@ It also uses a bubble sort instead of a mergesort. */
 #include <math.h>
 #include <time.h>
 
+// Modify these parameters as you see fit
 #define N_NODES 100000
 #define N_DIM 10
 #define TEST_NODES 1000
+double e = 39.4;
 
-int searchTime = 0;
+double searchTime = 0;
+
 
 void preprocess(double pointSet[N_DIM][N_NODES], double orderedSet[N_DIM][N_NODES], int bMap[N_NODES], int fMap[N_DIM][N_NODES]);
 void sort(double unsorted[N_NODES], int indexTrack[N_NODES]);
@@ -56,8 +59,6 @@ int main(void) {
 
     printf("=====Finished processing data=====\n");
 
-    double e = 39.4;
-
     // For each node, test for the nearest neighbour
     int noNeighbour = 0;
     for (int n = 0; n < TEST_NODES; n++) {
@@ -67,8 +68,8 @@ int main(void) {
         }
     }
 
-    printf("%d nodes had no nearest neighbour in the hypercube of side length 2e with e = %lf\n", noNeighbour, e);
-    printf("Took %d seconds to search\n", searchTime/1000);
+    printf("%d test nodes had no data nodes in the hypercube of side length 2e with e = %lf\n", noNeighbour, e);
+    printf("Took %lf seconds to search\n", searchTime);
     return 0;
 }
 
