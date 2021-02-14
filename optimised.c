@@ -6,15 +6,22 @@ to order the dimensions for searching which is more effective on small scale */
 #include <stdlib.h>
 #include <float.h>
 #include <math.h>
+#include <time.h>
 
 #define N_NODES 100000
 #define N_DIM 10
-#define TEST_NODES 1000
+#define TEST_NODES 10000
+
+double searchTime = 0;
+int inRange = 0;
 
 typedef struct tuple {
     int index;
     double value;
 } tuple;
+
+static int candidates[N_NODES];
+static tuple unsortedTuples[N_NODES];
 
 void preprocess(double pointSet[N_DIM][N_NODES], double orderedSet[N_DIM][N_NODES], int bMap[N_DIM][N_NODES], int fMap[N_DIM][N_NODES]);
 void sort(double unsorted[N_NODES], int indexTrack[N_NODES]);
@@ -63,7 +70,8 @@ int main(void) {
 
     printf("=====Finished processing data=====\n");
 
-    double e = 39.4;
+    double e = 0.225;
+    // double e = 0.2304637055;
 
     // For each node, test for the nearest neighbour
     int noNeighbour = 0;
@@ -75,6 +83,8 @@ int main(void) {
     }
 
     printf("%d nodes had no nearest neighbour in the hypercube of side length 2e with e = %lf\n", noNeighbour, e);
+    printf("%d nodes had a nearest neighbour with distance under %lf\n", inRange, e);
+    printf("Took %lf seconds to search\n", searchTime);
 
     return 0;
 }
@@ -100,7 +110,6 @@ track of the position of the original indexes in ascending order of their corres
 values. */
 void mergeSortIndex(double unsorted[N_NODES], int indexTrack[N_NODES]) {
     // Create structs of index, value pairs
-    tuple unsortedTuples[N_NODES];
     for (int i = 0; i < N_NODES; i++) {
         unsortedTuples[i].index = i;
         unsortedTuples[i].value = unsorted[i];
@@ -228,6 +237,7 @@ void insertionSort(int unsorted[N_DIM], int indexTrack[N_DIM]) {
 which represents the cloeset point. Returns -1 if no nearest poitn was found within
 the given margin */
 int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES], int bMap[N_DIM][N_NODES], int fMap[N_DIM][N_NODES], double e, double pointSet[N_DIM][N_NODES]) {
+    clock_t start = clock();
     // Perform binary searches on all dimensions and order them in ascending order
     // based on number of points between the indexes.
     int lowerIndexes[N_DIM]; // lowerIndexes[d] = lower bound index of the dth dimension
@@ -246,7 +256,6 @@ int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES
     insertionSort(nPoints, sortedDimensions);
 
     // Create list of candidates to be trimmed
-    int candidates[N_NODES];
     int nCandidates = 0;
     for (int i = lowerIndexes[sortedDimensions[0]]; i <= upperIndexes[sortedDimensions[0]]; i++) {
         candidates[nCandidates] = bMap[sortedDimensions[0]][i];
@@ -270,21 +279,32 @@ int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES
             }
         }
     }
+    // printf("Nodes after trim = %d\n", nCandidates);
 
-    printf("Nodes after trim = %d\n", nCandidates);
     // Perform an exhaustive search on the remaining points
     double maximum = DBL_MAX;
     int index = -1;
+
+    int inRangeFlag = 0;
+
     for (int n = 0; n < nCandidates; n++) {
         double distance = 0;
         for (int d = 0; d < N_DIM; d++) {
             distance += pow(point[d] - orderedSet[d][fMap[d][candidates[n]]], 2);
+        }
+        if (distance < e * e) {
+            inRangeFlag = 1;
         }
         if (distance < maximum) {
             maximum = distance;
             index = candidates[n];
         }
     }
+
+    inRange += inRangeFlag;
+
+    clock_t end = clock();
+    searchTime += (double)(end - start) / CLOCKS_PER_SEC;
 
     return index;
 }

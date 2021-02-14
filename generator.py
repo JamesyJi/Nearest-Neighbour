@@ -9,7 +9,7 @@ dim = int(input("How many dimensions?"))
 for i in range(int(input("How many nodes?"))):
     node = []
     for d in range(dim):
-        node.append(random.uniform(0, 100))
+        node.append(random.uniform(0, 1))
     
     file.write(' '.join(map(str, node)) + '\n')
 
@@ -20,7 +20,7 @@ testFile = open("testset.txt", "w")
 for i in range(int(input("How many test nodes?"))):
     node = []
     for d in range(dim):
-        node.append(random.uniform(0, 100))
+        node.append(random.uniform(0, 1))
 
     testFile.write(' '.join(map(str, node)) + '\n')
 

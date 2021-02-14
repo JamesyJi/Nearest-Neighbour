@@ -6,10 +6,13 @@ It also uses a bubble sort instead of a mergesort. */
 #include <stdlib.h>
 #include <float.h>
 #include <math.h>
+#include <time.h>
 
 #define N_NODES 100000
 #define N_DIM 10
 #define TEST_NODES 1000
+
+int searchTime = 0;
 
 void preprocess(double pointSet[N_DIM][N_NODES], double orderedSet[N_DIM][N_NODES], int bMap[N_NODES], int fMap[N_DIM][N_NODES]);
 void sort(double unsorted[N_NODES], int indexTrack[N_NODES]);
@@ -53,19 +56,19 @@ int main(void) {
 
     printf("=====Finished processing data=====\n");
 
-    printf("=====Finished processing data=====\n");
+    double e = 39.4;
 
     // For each node, test for the nearest neighbour
     int noNeighbour = 0;
     for (int n = 0; n < TEST_NODES; n++) {
-        int index = nearestNeighbourSearch(testSet[n], orderedSet, bMap, fMap, 39.4, pointSet);
+        int index = nearestNeighbourSearch(testSet[n], orderedSet, bMap, fMap, e, pointSet);
         if (index == -1) {
             noNeighbour += 1;
         }
     }
 
-    printf("%d nodes had no nearest neighbour in their hypercube of side length  \n", noNeighbour);
-
+    printf("%d nodes had no nearest neighbour in the hypercube of side length 2e with e = %lf\n", noNeighbour, e);
+    printf("Took %d seconds to search\n", searchTime/1000);
     return 0;
 }
 
@@ -134,6 +137,8 @@ void sort(double unsorted[N_NODES], int indexTrack[N_NODES]) {
 which represents the cloeset point. Returns -1 if no nearest poitn was found within
 the given margin */
 int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES], int bMap[N_NODES], int fMap[N_DIM][N_NODES], double e, double pointSet[N_DIM][N_NODES]) {
+    clock_t start = clock();
+
     // Perform binary search on first dimension
     int bottom = binarySearchLeftMost(orderedSet[0], point[0] - e);
     int top = binarySearchRightMost(orderedSet[0], point[0] + e);
@@ -170,7 +175,7 @@ int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES
         }
     }
 
-    printf("Nodes after trim = %d\n", nCandidates);
+    // printf("Nodes after trim = %d\n", nCandidates);
     // Perform an exhaustive search on the remaining points
     double maximum = DBL_MAX;
     int index = -1;
@@ -184,6 +189,9 @@ int nearestNeighbourSearch(double point[N_DIM], double orderedSet[N_DIM][N_NODES
             index = candidates[n];
         }
     }
+
+    clock_t end = clock();
+    searchTime += (double)(end - start) / CLOCKS_PER_SEC;
 
     return index;
 }
