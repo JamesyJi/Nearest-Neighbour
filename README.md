@@ -1,6 +1,6 @@
 # Nearest-Neighbour
 
-An exploration of the algorithm in [A Simple Algorithm for Nearest Neighbours in High Dimensions (October 1995) by Sameer A. Nene and Shree K. Nayar from the Department of Computer Science at Columbia University](https://www1.cs.columbia.edu/CAVE/publications/pdfs/Nene_TR95.pdf). In this readme, I will:
+In my spare time, I came across an interesting algorithm in [A Simple Algorithm for Nearest Neighbours in High Dimensions (October 1995) by Sameer A. Nene and Shree K. Nayar from the Department of Computer Science at Columbia University](https://www1.cs.columbia.edu/CAVE/publications/pdfs/Nene_TR95.pdf). In this readme, I will:
 1. Explain my attempts to optimise the algorithm
 2. Delve into some of the more complicated analysis on the relationship between the minimum hypercube/hypersphere measurements and the probability that a point exists within the range **(VERY IN DEPTH)**
 
